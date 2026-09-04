@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Transaction Risk Investigation Assistant</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <style>
+    :root { --brand: #1e40af; --brand-light: #dbeafe; }
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f1f5f9; }
+    .fade-in { animation: fadeIn 0.4s ease-in; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .card { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06); }
+    .badge { display: inline-flex; align-items: center; padding: 2px 10px; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; }
+    .pulse-ring { box-shadow: 0 0 0 4px rgba(239,68,68,0.2); }
+    ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect, useRef, useCallback } = React;
+    const { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar } = Recharts;
+
+    /* ── API helpers ─────────────────────────────────────── */
+    const api = {
+      health: () => fetch('/api/health').then(r => r.json()),
+      analyze: (csv, name) => fetch('/api/analyze', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ csv_content: csv, customer_name: name })
+      }).then(r => r.json()),
+      sample: (type) => fetch(`/api/sample/${type}`).then(r => r.json()),
+      rules: () => fetch('/api/rules').then(r => r.json()),
+    };
+
+    /* ── Color helpers ───────────────────────────────────── */
+    const levelColors = {
+      CRITICAL: { bg: 'bg-red-600', text: 'text-white', light: 'bg-red-50', border: 'border-red-200', dot: 'bg-red-500' },
+      HIGH:     { bg: 'bg-orange-500', text: 'text-white', light: 'bg-orange-50', border: 'border-orange-200', dot: 'bg-orange-500' },
+      MEDIUM:   { bg: 'bg-yellow-400', text: 'text-gray-900', light: 'bg-yellow-50', border: 'border-yellow-200', dot: 'bg-yellow-400' },
+      LOW:      { bg: 'bg-green-500', text: 'text-white', light: 'bg-green-50', border: 'border-green-200', dot: 'bg-green-500' },
+    };
+    const confColors = { HIGH: 'text-green-600', MEDIUM: 'text-yellow-600', LOW: 'text-orange-500', INSUFFICIENT: 'text-red-500' };
+    const devColors = { 'Strong deviation': 'text-red-600 font-semibold', 'Moderate deviation': 'text-orange-500 font-semibold', 'Mild deviation': 'text-yellow-600', 'Normal': 'text-green-600' };
+    const ruleColors = { R1: 'bg-red-100 text-red-700 border-red-200', R2: 'bg-orange-100 text-orange-700 border-orange-200', R3: 'bg-yellow-100 text-yellow-700 border-yellow-200', R4: 'bg-purple-100 text-purple-700 border-purple-200' };
+    const ruleNames = { R1: 'Amount Deviation', R2: 'New Payee Burst', R3: 'Odd-Hours', R4: 'Pattern Deviation' };
+    const ruleIcons = { R1: '💸', R2: '🆕', R3: '🌙', R4: '📊' };
+    const fmt = n => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(n);
+    const fmtDate = s => { try { return new Date(s).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }); } catch { return s; } };
+
+    /* ── Badge component ─────────────────────────────────── */
+    const Badge = ({ text, color }) => <span className={`badge border ${color}`}>{text}</span>;
+
+    /* ── Header ──────────────────────────────────────────── */
+    const Header = ({ report, aiAvailable }) => (
+      <header className="bg-gradient-to-r from-blue-900 to-blue-700 text-white px-6 py-4 shadow-lg">
+        <div className="max-w-7xl mx-auto flex items-center justify-between flex-wrap gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-blue-400 bg-opacity-30 rounded-xl flex items-center justify-center text-xl">🏦</div>
+            <div>
+              <h1 className="font-bold text-lg leading-tight">Transaction Risk Investigation Assistant</h1>
+              <p className="text-blue-200 text-xs">Smart India Hackathon — PS6 · Deterministic + Gemini AI</p>
+            </div>
+          </div>
+          {report && (
+            <div className="flex items-center gap-4 text-sm flex-wrap">
+              <span className="text-blue-200">👤 {report.customer_name}</span>
+              <span className="text-blue-200">📅 {report.analysis_period}</span>
+              <span className={`badge ${confColors[report.baseline_confidence]} bg-blue-800 bg-opacity-50`}>
+                Baseline: {report.baseline_confidence}
+              </span>
+              <span className={`badge ${aiAvailable ? 'bg-green-500' : 'bg-gray-500'} text-white`}>
+                {aiAvailable ? '✓ Gemini AI' : '⚠ AI Unavailable'}
+              </span>
+            </div>
+          )}
+        </div>
+      </header>
+    );
+
+    /* ── Verdict card ────────────────────────────────────── */
+    const VerdictCard = ({ report }) => {
+      const isAttention = report.investigation_status === 'ATTENTION_REQUIRED';
+      const lc = levelColors[report.priority_level] || levelColors.LOW;
+      return (
+        <div className={`card p-6 ${isAttention ? 'border-2 border-red-400 pulse-ring' : 'border-2 border-green-300'} fade-in`}>
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div className="flex items-center gap-4">
+              <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-4xl ${isAttention ? 'bg-red-100' : 'bg-green-100'}`}>
+                {isAttention ? '⚠️' : '✅'}
+              </div>
+              <div>
+                <div className={`text-2xl font-extrabold ${isAttention ? 'text-red-700' : 'text-green-700'}`}>
+                  {isAttention ? 'ATTENTION REQUIRED' : 'NO ATTENTION REQUIRED'}
+                </div>
+                <div className="text-gray-500 text-sm mt-1">{report.total_transactions} transactions analysed · {report.analysis_period}</div>
+              </div>
+            </div>
+            <div className="text-center">
+              <div className={`inline-flex flex-col items-center px-6 py-3 rounded-2xl ${lc.bg} ${lc.text}`}>
+                <div className="text-3xl font-black">{report.priority_score}<span className="text-lg font-normal opacity-70">/100</span></div>
+                <div className="text-xs font-semibold opacity-90 mt-0.5">INVESTIGATION PRIORITY</div>
+                <div className="text-sm font-bold mt-1">{report.priority_level}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    /* ── AI Summary card ─────────────────────────────────── */
+    const SummaryCard = ({ report }) => (
+      <div className="card p-5 fade-in">
+        <div className="flex items-center gap-2 mb-3">
+          <span className="text-lg">📋</span>
+          <h2 className="font-bold text-gray-800">Executive Summary</h2>
+          {report.ai_cached && <Badge text="Cached" color="bg-blue-50 text-blue-600 border-blue-200" />}
+          {report.deterministic_fallback && <Badge text="Deterministic Fallback" color="bg-yellow-50 text-yellow-700 border-yellow-200" />}
+        </div>
+        <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-line">{report.ai_summary}</p>
+        {report.investigation_status === 'ATTENTION_REQUIRED' && report.ai_why_attention && (
+          <div className="mt-4 pt-4 border-t border-gray-100">
+            <h3 className="font-semibold text-gray-700 text-sm mb-2">Why Attention Is Required</h3>
+            <p className="text-gray-600 text-sm whitespace-pre-line leading-relaxed">{report.ai_why_attention}</p>
+          </div>
+        )}
+      </div>
+    );
+
+    /* ── Triggered rules ─────────────────────────────────── */
+    const RulesCard = ({ rules }) => {
+      const [expanded, setExpanded] = useState(null);
+      if (!rules?.length) return null;
+      return (
+        <div className="card p-5 fade-in">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="text-lg">🚨</span>
+            <h2 className="font-bold text-gray-800">Triggered Risk Rules</h2>
+            <Badge text={`${rules.length} triggered`} color="bg-red-50 text-red-600 border-red-200" />
+          </div>
+          <div className="space-y-3">
+            {rules.map((rule, i) => (
+              <div key={i} className={`rounded-xl border p-4 cursor-pointer transition-all ${ruleColors[rule.rule_id] || 'bg-gray-50 border-gray-200'}`}
+                onClick={() => setExpanded(expanded === i ? null : i)}>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">{ruleIcons[rule.rule_id] || '⚡'}</span>
+                    <div>
+                      <span className="font-bold text-sm">[{rule.rule_id}] {rule.name}</span>
+                      <Badge text={rule.severity} color="ml-2 bg-white bg-opacity-70 border-current" />
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-sm">+{rule.score_contribution}pts</span>
+                    <span className="text-xs">{expanded === i ? '▲' : '▼'}</span>
+                  </div>
+                </div>
+                {expanded === i && (
+                  <div className="mt-3 pt-3 border-t border-current border-opacity-20">
+                    <p className="text-sm opacity-90 leading-relaxed">{rule.reason}</p>
+                    {rule.transaction_ids?.length > 0 && (
+                      <div className="mt-2 flex flex-wrap gap-1">
+                        {rule.transaction_ids.map(tid => <code key={tid} className="text-xs bg-white bg-opacity-60 px-2 py-0.5 rounded">{tid}</code>)}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    };
+
+    /* ── Transactions table ──────────────────────────────── */
+    const TransactionsTable = ({ transactions, clusters }) => {
+      const clusterMap = {};
+      clusters?.forEach(c => c.transaction_ids.forEach(tid => clusterMap[tid] = c.cluster_id));
+      if (!transactions?.length) return null;
+      return (
+        <div className="card p-5 fade-in">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="text-lg">📊</span>
+            <h2 className="font-bold text-gray-800">Flagged Transactions</h2>
+            <Badge text={`${transactions.length} flagged`} color="bg-red-50 text-red-600 border-red-200" />
+          </div>
+          <div className="overflow-x-auto rounded-lg border border-gray-100">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 text-gray-600 text-xs uppercase">
+                <tr>
+                  <th className="px-3 py-2.5 text-left">Txn ID</th>
+                  <th className="px-3 py-2.5 text-left">Date/Time</th>
+                  <th className="px-3 py-2.5 text-left">Payee</th>
+                  <th className="px-3 py-2.5 text-right">Amount</th>
+                  <th className="px-3 py-2.5 text-left">Channel</th>
+                  <th className="px-3 py-2.5 text-left">Rules</th>
+                  <th className="px-3 py-2.5 text-left">Cluster</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {transactions.map((txn, i) => (
+                  <tr key={i} className="hover:bg-red-50 transition-colors">
+                    <td className="px-3 py-2.5"><code className="font-mono text-blue-700 font-semibold">{txn.transaction_id}</code></td>
+                    <td className="px-3 py-2.5 text-gray-600 whitespace-nowrap">{fmtDate(txn.timestamp)}</td>
+                    <td className="px-3 py-2.5 text-gray-800 font-medium">{txn.payee}</td>
+                    <td className="px-3 py-2.5 text-right font-bold text-red-700">{fmt(txn.amount)}</td>
+                    <td className="px-3 py-2.5"><span className="badge bg-gray-100 text-gray-600 border-gray-200">{txn.channel}</span></td>
+                    <td className="px-3 py-2.5">
+                      <div className="flex flex-wrap gap-1">
+                        {txn.triggered_rules?.map(r => <span key={r} className={`badge border text-xs ${ruleColors[r] || 'bg-gray-100'}`}>{r}</span>)}
+                      </div>
+                    </td>
+                    <td className="px-3 py-2.5">{clusterMap[txn.transaction_id] && <code className="text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded">{clusterMap[txn.transaction_id]}</code>}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      );
+    };
+
+    /* ── Clusters card ───────────────────────────────────── */
+    const ClustersCard = ({ clusters }) => {
+      if (!clusters?.length) return null;
+      return (
+        <div className="card p-5 fade-in">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="text-lg">🔗</span>
+            <h2 className="font-bold text-gray-800">Connected Activity Clusters</h2>
+          </div>
+          <div className="grid gap-3">
+            {clusters.map((cluster, i) => (
+              <div key={i} className="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                <div className="flex items-center justify-between mb-2">
+                  <code className="font-bold text-blue-700">{cluster.cluster_id}</code>
+                  <span className="font-bold text-red-700">{fmt(cluster.total_amount)}</span>
+                </div>
+                {cluster.payee && <p className="text-gray-700 text-sm mb-1">Payee: <strong>{cluster.payee}</strong></p>}
+                <p className="text-gray-600 text-xs mb-2">Time span: {cluster.time_span_hours}h · {cluster.transaction_ids.length} transactions</p>
+                <div className="flex flex-wrap gap-1 mb-2">
+                  {cluster.transaction_ids.map(tid => <code key={tid} className="text-xs bg-white border border-gray-200 px-2 py-0.5 rounded">{tid}</code>)}
+                </div>
+                <div className="flex flex-wrap gap-1">
+                  {cluster.rules_triggered.map(r => <span key={r} className={`badge border text-xs ${ruleColors[r] || 'bg-gray-100'}`}>{ruleIcons[r]} {ruleNames[r] || r}</span>)}
+                </div>
+                <p className="text-gray-500 text-xs mt-2 italic">{cluster.explanation}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    };
+
+    /* ── Behaviour chart ─────────────────────────────────── */
+    const BehaviourCard = ({ report }) => {
+      const pd = report.pattern_deviation;
+      const baseline = report.baseline;
+      if (!pd) return null;
+
+      const radarData = [
+        { dim: 'Amount', score: pd.amount_score, label: pd.amount_label },
+        { dim: 'Timing', score: pd.time_score, label: pd.time_label },
+        { dim: 'Payee', score: pd.payee_score, label: pd.payee_label },
+        { dim: 'Channel', score: pd.channel_score, label: pd.channel_label },
+        { dim: 'Frequency', score: pd.frequency_score, label: pd.frequency_label },
+      ];
+
+      return (
+        <div className="card p-5 fade-in">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="text-lg">🔍</span>
+            <h2 className="font-bold text-gray-800">Behavioural Deviation Analysis</h2>
+            <Badge text={`Overall: ${pd.overall_score}/100`}
+              color={pd.overall_score >= 70 ? 'bg-red-50 text-red-700 border-red-200' : pd.overall_score >= 50 ? 'bg-orange-50 text-orange-700 border-orange-200' : 'bg-green-50 text-green-700 border-green-200'} />
+          </div>
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <h3 className="font-semibold text-gray-700 text-sm mb-2">Deviation by Dimension</h3>
+              <div className="space-y-2">
+                {radarData.map(d => (
+                  <div key={d.dim} className="flex items-center gap-2">
+                    <span className="text-xs text-gray-500 w-20">{d.dim}</span>
+                    <div className="flex-1 bg-gray-100 rounded-full h-2 overflow-hidden">
+                      <div className={`h-2 rounded-full transition-all ${d.score >= 70 ? 'bg-red-500' : d.score >= 50 ? 'bg-orange-400' : d.score >= 30 ? 'bg-yellow-400' : 'bg-green-400'}`}
+                        style={{ width: `${d.score}%` }} />
+                    </div>
+                    <span className={`text-xs w-32 ${devColors[d.label] || 'text-gray-500'}`}>{d.label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-700 text-sm mb-2">Customer Baseline</h3>
+              <div className="space-y-1.5 text-sm text-gray-600">
+                <div className="flex justify-between"><span>Median amount:</span><strong>{fmt(baseline.median_amount)}</strong></div>
+                <div className="flex justify-between"><span>Large threshold:</span><strong>{fmt(baseline.large_threshold)}</strong></div>
+                <div className="flex justify-between"><span>Extreme threshold:</span><strong>{fmt(baseline.extreme_threshold)}</strong></div>
+                <div className="flex justify-between"><span>Active hours:</span><strong>{baseline.normal_activity_window}</strong></div>
+                <div className="flex justify-between"><span>Historical txns:</span><strong>{baseline.n_historical}</strong></div>
+                <div className="flex justify-between"><span>Baseline confidence:</span><strong className={confColors[baseline.confidence]}>{baseline.confidence}</strong></div>
+              </div>
+              {report.ai_behavioural_difference && (
+                <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-100">
+                  <p className="text-xs text-blue-800 whitespace-pre-line leading-relaxed">{report.ai_behavioural_difference}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    /* ── First steps ─────────────────────────────────────── */
+    const FirstStepsCard = ({ steps }) => {
+      if (!steps?.length) return null;
+      return (
+        <div className="card p-5 fade-in">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="text-lg">🎯</span>
+            <h2 className="font-bold text-gray-800">Investigator First Steps</h2>
+          </div>
+          <ol className="space-y-2">
+            {steps.map((step, i) => (
+              <li key={i} className="flex gap-3 items-start">
+                <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex-shrink-0 flex items-center justify-center mt-0.5">{i + 1}</span>
+                <p className="text-gray-700 text-sm leading-relaxed">{step}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      );
+    };
+
+    /* ── Grounding card ──────────────────────────────────── */
+    const GroundingCard = ({ docs }) => {
+      if (!docs?.length) return null;
+      return (
+        <div className="card p-5 fade-in border-l-4 border-blue-400">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-lg">📚</span>
+            <h2 className="font-bold text-gray-800">AI Grounding — Retrieved Policy Documents</h2>
+          </div>
+          <p className="text-gray-500 text-xs mb-3">The Gemini explanation is grounded in these local policy documents retrieved via RAG (gemini-embedding-001):</p>
+          <div className="space-y-1.5">
+            {docs.map((doc, i) => (
+              <div key={i} className="flex items-center gap-2 text-sm text-blue-700 bg-blue-50 rounded-lg px-3 py-2 border border-blue-100">
+                <span>📄</span><span>{doc}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    };
+
+    /* ── Load panel ──────────────────────────────────────── */
+    const LoadPanel = ({ onLoad, loading }) => {
+      const [tab, setTab] = useState('sample');
+      const [csv, setCsv] = useState('');
+      const [name, setName] = useState('');
+      const fileRef = useRef();
+
+      const loadSample = async (type) => {
+        try {
+          const data = await api.sample(type);
+          const defaultNames = { normal: 'Priya Sharma', investigation: 'Rajesh Kumar' };
+          onLoad(data.csv_content, defaultNames[type] || type);
+        } catch (e) { alert('Failed to load sample: ' + e.message); }
+      };
+
+      const handleFile = (e) => {
+        const f = e.target.files[0];
+        if (!f) return;
+        const reader = new FileReader();
+        reader.onload = ev => setCsv(ev.target.result);
+        reader.readAsText(f);
+      };
+
+      return (
+        <div className="card p-6 fade-in">
+          <div className="flex items-center gap-2 mb-5">
+            <span className="text-xl">🔎</span>
+            <h2 className="font-bold text-xl text-gray-800">New Investigation</h2>
+          </div>
+          <div className="flex gap-0 mb-5 rounded-xl overflow-hidden border border-gray-200">
+            {['sample', 'upload'].map(t => (
+              <button key={t} onClick={() => setTab(t)}
+                className={`flex-1 py-2.5 text-sm font-semibold transition-colors ${tab === t ? 'bg-blue-700 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}>
+                {t === 'sample' ? '📋 Sample Cases' : '📁 Upload CSV'}
+              </button>
+            ))}
+          </div>
+
+          {tab === 'sample' && (
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="border-2 border-green-200 rounded-xl p-5 hover:border-green-400 transition-colors cursor-pointer"
+                onClick={() => !loading && loadSample('normal')}>
+                <div className="text-3xl mb-2">✅</div>
+                <h3 className="font-bold text-green-800 mb-1">Normal Case</h3>
+                <p className="text-gray-600 text-sm">Priya Sharma — consistent spending, salary, groceries, utilities. Expected: <strong className="text-green-600">NO ATTENTION REQUIRED</strong></p>
+                <button disabled={loading} className="mt-4 w-full py-2 bg-green-600 text-white rounded-lg font-semibold text-sm hover:bg-green-700 disabled:opacity-50 transition-colors">
+                  {loading ? '⏳ Analysing…' : 'Load Normal Case'}
+                </button>
+              </div>
+              <div className="border-2 border-red-200 rounded-xl p-5 hover:border-red-400 transition-colors cursor-pointer"
+                onClick={() => !loading && loadSample('investigation')}>
+                <div className="text-3xl mb-2">⚠️</div>
+                <h3 className="font-bold text-red-800 mb-1">Investigation Case</h3>
+                <p className="text-gray-600 text-sm">Rajesh Kumar — new payee burst, odd-hours activity, amount deviation. Expected: <strong className="text-red-600">ATTENTION REQUIRED</strong></p>
+                <button disabled={loading} className="mt-4 w-full py-2 bg-red-600 text-white rounded-lg font-semibold text-sm hover:bg-red-700 disabled:opacity-50 transition-colors">
+                  {loading ? '⏳ Analysing…' : 'Load Investigation Case'}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {tab === 'upload' && (
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Customer Name</label>
+                <input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. John Doe"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Transaction CSV</label>
+                <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center cursor-pointer hover:border-blue-400 transition-colors"
+                  onClick={() => fileRef.current.click()}>
+                  <div className="text-3xl mb-2">📂</div>
+                  <p className="text-gray-500 text-sm">Click to select a CSV file</p>
+                  <p className="text-gray-400 text-xs mt-1">Required: transaction_id, timestamp, amount · Optional: description, payee, channel</p>
+                  <input ref={fileRef} type="file" accept=".csv" className="hidden" onChange={handleFile} />
+                </div>
+              </div>
+              {csv && (
+                <div>
+                  <p className="text-green-600 text-sm font-semibold mb-1">✓ File loaded ({csv.split('\n').length} lines)</p>
+                  <textarea readOnly value={csv.slice(0, 300) + (csv.length > 300 ? '…' : '')}
+                    className="w-full h-20 text-xs font-mono bg-gray-50 border border-gray-200 rounded-lg px-2 py-1 resize-none" />
+                </div>
+              )}
+              <button disabled={!csv || loading}
+                onClick={() => onLoad(csv, name || 'Customer')}
+                className="w-full py-3 bg-blue-700 text-white rounded-lg font-bold text-sm hover:bg-blue-800 disabled:opacity-40 transition-colors">
+                {loading ? '⏳ Analysing…' : '🔍 Run Investigation Analysis'}
+              </button>
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    /* ── Warnings banner ─────────────────────────────────── */
+    const WarningsBanner = ({ warnings }) => {
+      if (!warnings?.length) return null;
+      return (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 text-sm text-yellow-800">
+          <strong>⚠ Validation Notices:</strong>
+          <ul className="list-disc list-inside mt-1 space-y-0.5">
+            {warnings.map((w, i) => <li key={i}>{w}</li>)}
+          </ul>
+        </div>
+      );
+    };
+
+    /* ── AI disclaimer ───────────────────────────────────── */
+    const AiDisclaimer = ({ report }) => (
+      <div className="bg-blue-50 border border-blue-100 rounded-xl p-3 text-xs text-blue-700 flex items-start gap-2">
+        <span className="text-base">ℹ️</span>
+        <div>
+          <strong>Human-in-the-Loop Investigation Tool.</strong> This system identifies risk signals and behavioural anomalies — it does NOT determine whether fraud has occurred. The final judgment rests with the human investigator.
+          {report?.deterministic_fallback && !report?.ai_available &&
+            <span className="block mt-1 text-yellow-700">⚠ AI explanation unavailable — showing verified deterministic findings.</span>}
+        </div>
+      </div>
+    );
+
+    /* ── Main App ────────────────────────────────────────── */
+    function App() {
+      const [report, setReport] = useState(null);
+      const [loading, setLoading] = useState(false);
+      const [warnings, setWarnings] = useState([]);
+      const [error, setError] = useState(null);
+      const [aiAvailable, setAiAvailable] = useState(null);
+
+      useEffect(() => {
+        api.health().then(h => setAiAvailable(h.ai_available)).catch(() => setAiAvailable(false));
+      }, []);
+
+      const handleLoad = useCallback(async (csv, name) => {
+        setLoading(true); setError(null); setWarnings([]); setReport(null);
+        try {
+          const result = await api.analyze(csv, name);
+          if (result.success) {
+            setReport(result.report);
+            setWarnings(result.validation_warnings || []);
+            setAiAvailable(result.report?.ai_available);
+          } else {
+            setError(result.error || 'Analysis failed');
+          }
+        } catch (e) {
+          setError('Network error: ' + e.message);
+        } finally {
+          setLoading(false);
+        }
+      }, []);
+
+      const handleReset = () => { setReport(null); setError(null); setWarnings([]); };
+
+      return (
+        <div className="min-h-screen flex flex-col">
+          <Header report={report} aiAvailable={aiAvailable} />
+          <main className="flex-1 max-w-7xl mx-auto w-full px-4 py-6 space-y-5">
+            <AiDisclaimer report={report} />
+            {!report && <LoadPanel onLoad={handleLoad} loading={loading} />}
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-red-700 text-sm">
+                <strong>❌ Error:</strong> {error}
+              </div>
+            )}
+            {loading && (
+              <div className="card p-10 text-center fade-in">
+                <div className="text-4xl mb-3 animate-spin">⚙️</div>
+                <p className="text-gray-600 font-semibold">Running investigation analysis…</p>
+                <p className="text-gray-400 text-sm mt-1">Deterministic engine → RAG retrieval → Gemini reasoning → Validation</p>
+              </div>
+            )}
+            {warnings.length > 0 && <WarningsBanner warnings={warnings} />}
+            {report && (
+              <>
+                <VerdictCard report={report} />
+                <div className="grid lg:grid-cols-3 gap-5">
+                  <div className="lg:col-span-2 space-y-5">
+                    <SummaryCard report={report} />
+                    {report.triggered_rules?.length > 0 && <RulesCard rules={report.triggered_rules} />}
+                    {report.flagged_transactions?.length > 0 && <TransactionsTable transactions={report.flagged_transactions} clusters={report.clusters} />}
+                    {report.clusters?.length > 0 && <ClustersCard clusters={report.clusters} />}
+                  </div>
+                  <div className="space-y-5">
+                    <BehaviourCard report={report} />
+                    {report.ai_first_steps?.length > 0 && <FirstStepsCard steps={report.ai_first_steps} />}
+                    {report.ai_grounding_documents?.length > 0 && <GroundingCard docs={report.ai_grounding_documents} />}
+                    <button onClick={handleReset} className="w-full py-2.5 bg-gray-100 text-gray-700 rounded-xl font-semibold text-sm hover:bg-gray-200 transition-colors">
+                      ← New Investigation
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
+          </main>
+          <footer className="text-center py-4 text-xs text-gray-400 border-t border-gray-200 mt-4">
+            Banking Transaction Risk Investigation Assistant · Smart India Hackathon PS6 · Deterministic Engine + Gemini AI + Local RAG
+          </footer>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
