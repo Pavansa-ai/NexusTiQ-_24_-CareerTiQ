@@ -2,8 +2,8 @@ TRACK_ID=PS6
 
 # Banking Transaction Risk Investigation Assistant
 
-> Smart India Hackathon 2024 — Problem Statement PS6  
-> Team: Pavansa AI · Track: Banking & Finance
+> NexusTiQ 24 — Problem Statement PS6  
+> Track: Banking & Finance
 
 A full-stack AI-powered system for **banking transaction risk investigation**. It analyses a customer's transaction history to surface risk signals using deterministic statistical rules, Gemini AI reasoning, and a local Retrieval-Augmented Generation (RAG) knowledge base — without ever making a fraud determination.
 
