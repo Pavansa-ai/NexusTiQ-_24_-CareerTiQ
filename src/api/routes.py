@@ -99,7 +99,12 @@ async def get_sample(case_type: str):
         raise HTTPException(status_code=404, detail=f"Unknown case type: {case_type}")
     if not path.exists():
         raise HTTPException(status_code=404, detail=f"Sample data not found: {path}")
-    return {"csv_content": path.read_text(encoding="utf-8"), "case_type": case_type}
+    case_names = {"normal": "Priya Sharma", "investigation": "Rajesh Kumar"}
+    return {
+        "csv_content": path.read_text(encoding="utf-8"),
+        "case_type": case_type,
+        "customer_name": case_names.get(case_type.lower(), "Customer"),
+    }
 
 
 # ---------------------------------------------------------------------------
