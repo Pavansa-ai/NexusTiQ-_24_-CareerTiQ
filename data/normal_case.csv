@@ -1,0 +1,96 @@
+transaction_id,timestamp,description,payee,amount,channel
+TX001,2025-10-01 09:15,Grocery shopping,Fresh Mart,1250,UPI
+TX002,2025-10-02 18:30,Mobile recharge,Airtel,399,UPI
+TX003,2025-10-03 10:00,Salary credit,ABC Technologies Ltd,68000,BANK_TRANSFER
+TX004,2025-10-04 12:45,Electricity bill,BESCOM,2140,NETBANKING
+TX005,2025-10-05 11:00,Grocery shopping,Fresh Mart,980,UPI
+TX006,2025-10-07 09:30,Coffee shop,Cafe Coffee Day,320,DEBIT_CARD
+TX007,2025-10-08 14:00,Online shopping,Amazon India,1850,DEBIT_CARD
+TX008,2025-10-10 19:00,Dinner,Swiggy,680,UPI
+TX009,2025-10-11 10:30,Fuel,Indian Oil,3200,DEBIT_CARD
+TX010,2025-10-12 11:00,Grocery shopping,Fresh Mart,1100,UPI
+TX011,2025-10-13 17:00,Movie tickets,BookMyShow,750,DEBIT_CARD
+TX012,2025-10-14 09:00,Internet bill,Jio Fiber,999,NETBANKING
+TX013,2025-10-15 12:00,Pharmacy,MedPlus,580,UPI
+TX014,2025-10-16 10:00,Grocery shopping,Fresh Mart,1320,UPI
+TX015,2025-10-17 18:00,Dinner,Zomato,540,UPI
+TX016,2025-10-18 14:00,Online shopping,Flipkart,2200,DEBIT_CARD
+TX017,2025-10-20 09:15,Grocery shopping,Fresh Mart,890,UPI
+TX018,2025-10-21 11:00,Fuel,Indian Oil,2800,DEBIT_CARD
+TX019,2025-10-22 16:30,Coffee shop,Starbucks,420,DEBIT_CARD
+TX020,2025-10-23 10:00,Salary credit,ABC Technologies Ltd,68000,BANK_TRANSFER
+TX021,2025-10-24 12:00,Rent payment,Housing Society,18000,NETBANKING
+TX022,2025-10-25 09:00,Grocery shopping,Fresh Mart,1050,UPI
+TX023,2025-10-26 18:30,Mobile recharge,Airtel,399,UPI
+TX024,2025-10-27 11:00,Pharmacy,MedPlus,340,UPI
+TX025,2025-10-28 14:00,Online shopping,Amazon India,1450,DEBIT_CARD
+TX026,2025-10-29 09:30,Coffee shop,Cafe Coffee Day,280,DEBIT_CARD
+TX027,2025-10-30 19:00,Dinner,Swiggy,710,UPI
+TX028,2025-10-31 10:00,Grocery shopping,Fresh Mart,1200,UPI
+TX029,2025-11-01 09:15,Fuel,Indian Oil,3100,DEBIT_CARD
+TX030,2025-11-03 11:30,Coffee shop,Cafe Coffee Day,350,DEBIT_CARD
+TX031,2025-11-04 12:00,Online shopping,Flipkart,1700,DEBIT_CARD
+TX032,2025-11-05 09:00,Grocery shopping,Fresh Mart,960,UPI
+TX033,2025-11-06 18:00,Dinner,Zomato,490,UPI
+TX034,2025-11-07 14:00,Pharmacy,MedPlus,620,UPI
+TX035,2025-11-08 10:00,Electricity bill,BESCOM,2080,NETBANKING
+TX036,2025-11-10 09:30,Grocery shopping,Fresh Mart,1180,UPI
+TX037,2025-11-11 12:00,Coffee shop,Starbucks,390,DEBIT_CARD
+TX038,2025-11-12 16:00,Online shopping,Amazon India,2100,DEBIT_CARD
+TX039,2025-11-13 11:00,Fuel,Indian Oil,2950,DEBIT_CARD
+TX040,2025-11-14 09:15,Grocery shopping,Fresh Mart,1080,UPI
+TX041,2025-11-15 17:00,Movie tickets,BookMyShow,800,DEBIT_CARD
+TX042,2025-11-16 10:00,Mobile recharge,Airtel,399,UPI
+TX043,2025-11-17 09:30,Salary credit,ABC Technologies Ltd,68000,BANK_TRANSFER
+TX044,2025-11-18 12:00,Rent payment,Housing Society,18000,NETBANKING
+TX045,2025-11-19 11:00,Grocery shopping,Fresh Mart,1050,UPI
+TX046,2025-11-20 18:30,Dinner,Swiggy,640,UPI
+TX047,2025-11-21 14:00,Online shopping,Flipkart,1950,DEBIT_CARD
+TX048,2025-11-22 09:30,Coffee shop,Cafe Coffee Day,310,DEBIT_CARD
+TX049,2025-11-23 10:00,Grocery shopping,Fresh Mart,1130,UPI
+TX050,2025-11-24 12:00,Pharmacy,MedPlus,450,UPI
+TX051,2025-11-25 09:15,Fuel,Indian Oil,2700,DEBIT_CARD
+TX052,2025-11-26 18:00,Dinner,Zomato,520,UPI
+TX053,2025-11-27 11:00,Grocery shopping,Fresh Mart,1220,UPI
+TX054,2025-11-28 14:30,Online shopping,Amazon India,1600,DEBIT_CARD
+TX055,2025-11-29 09:00,Coffee shop,Starbucks,360,DEBIT_CARD
+TX056,2025-11-30 12:00,Internet bill,Jio Fiber,999,NETBANKING
+TX057,2025-12-01 09:15,Grocery shopping,Fresh Mart,1080,UPI
+TX058,2025-12-02 11:00,Mobile recharge,Airtel,399,UPI
+TX059,2025-12-03 14:00,Fuel,Indian Oil,3050,DEBIT_CARD
+TX060,2025-12-04 09:30,Coffee shop,Cafe Coffee Day,290,DEBIT_CARD
+TX061,2025-12-05 12:00,Online shopping,Flipkart,1750,DEBIT_CARD
+TX062,2025-12-06 18:00,Dinner,Swiggy,590,UPI
+TX063,2025-12-07 10:00,Grocery shopping,Fresh Mart,1150,UPI
+TX064,2025-12-08 09:15,Pharmacy,MedPlus,380,UPI
+TX065,2025-12-09 16:00,Electricity bill,BESCOM,2200,NETBANKING
+TX066,2025-12-10 11:00,Online shopping,Amazon India,1900,DEBIT_CARD
+TX067,2025-12-11 18:30,Dinner,Zomato,470,UPI
+TX068,2025-12-12 09:30,Coffee shop,Starbucks,340,DEBIT_CARD
+TX069,2025-12-13 10:00,Grocery shopping,Fresh Mart,1060,UPI
+TX070,2025-12-14 09:15,Fuel,Indian Oil,2900,DEBIT_CARD
+TX071,2025-12-15 12:00,Salary credit,ABC Technologies Ltd,68000,BANK_TRANSFER
+TX072,2025-12-16 09:00,Rent payment,Housing Society,18000,NETBANKING
+TX073,2025-12-17 11:00,Grocery shopping,Fresh Mart,1180,UPI
+TX074,2025-12-18 14:00,Online shopping,Flipkart,2300,DEBIT_CARD
+TX075,2025-12-19 09:30,Coffee shop,Cafe Coffee Day,300,DEBIT_CARD
+TX076,2025-12-20 18:00,Dinner,Swiggy,620,UPI
+TX077,2025-12-21 12:00,Grocery shopping,Fresh Mart,1090,UPI
+TX078,2025-12-22 10:00,Pharmacy,MedPlus,510,UPI
+TX079,2025-12-23 09:15,Mobile recharge,Airtel,399,UPI
+TX080,2025-12-24 11:00,Online shopping,Amazon India,4200,DEBIT_CARD
+TX081,2025-12-25 15:00,Grocery shopping,Fresh Mart,1800,UPI
+TX082,2025-12-26 16:00,Fuel,Indian Oil,3200,DEBIT_CARD
+TX083,2025-12-27 10:00,Coffee shop,Starbucks,410,DEBIT_CARD
+TX084,2025-12-28 18:00,Dinner,Zomato,680,UPI
+TX085,2025-12-29 12:00,Online shopping,Flipkart,1550,DEBIT_CARD
+TX086,2025-12-30 09:30,Grocery shopping,Fresh Mart,1200,UPI
+TX087,2025-12-31 11:00,Internet bill,Jio Fiber,999,NETBANKING
+TX088,2026-01-01 10:00,Grocery shopping,Fresh Mart,1100,UPI
+TX089,2026-01-02 12:00,Mobile recharge,Airtel,399,UPI
+TX090,2026-01-03 09:15,Fuel,Indian Oil,2850,DEBIT_CARD
+TX091,2026-01-04 11:30,Coffee shop,Cafe Coffee Day,330,DEBIT_CARD
+TX092,2026-01-05 14:00,Online shopping,Amazon India,2050,DEBIT_CARD
+TX093,2026-01-06 18:00,Dinner,Swiggy,560,UPI
+TX094,2026-01-07 09:00,Grocery shopping,Fresh Mart,1140,UPI
+TX095,2026-01-08 12:00,Pharmacy,MedPlus,420,UPI

@@ -1,0 +1,113 @@
+transaction_id,timestamp,description,payee,amount,channel
+TX001,2025-10-01 09:20,Grocery shopping,City Mart,1180,UPI
+TX002,2025-10-02 10:30,Mobile recharge,Vodafone,299,UPI
+TX003,2025-10-03 08:45,Salary credit,Meridian Software Pvt Ltd,72000,BANK_TRANSFER
+TX004,2025-10-04 12:00,Electricity bill,MSEDCL,1960,NETBANKING
+TX005,2025-10-05 09:00,Grocery shopping,City Mart,1050,UPI
+TX006,2025-10-07 11:30,Coffee shop,Barista,340,DEBIT_CARD
+TX007,2025-10-08 14:00,Online shopping,Amazon India,1720,DEBIT_CARD
+TX008,2025-10-09 18:30,Dinner,Swiggy,590,UPI
+TX009,2025-10-10 09:15,Fuel,HPCL Fuel Station,2900,DEBIT_CARD
+TX010,2025-10-11 10:30,Grocery shopping,City Mart,990,UPI
+TX011,2025-10-12 17:00,Movie tickets,BookMyShow,720,DEBIT_CARD
+TX012,2025-10-13 09:00,Internet bill,BSNL Fiber,799,NETBANKING
+TX013,2025-10-14 11:00,Pharmacy,Apollo Pharmacy,520,UPI
+TX014,2025-10-15 09:30,Grocery shopping,City Mart,1250,UPI
+TX015,2025-10-16 18:00,Dinner,Zomato,510,UPI
+TX016,2025-10-17 14:00,Online shopping,Flipkart,1980,DEBIT_CARD
+TX017,2025-10-18 09:00,Grocery shopping,City Mart,870,UPI
+TX018,2025-10-20 09:30,Fuel,HPCL Fuel Station,2750,DEBIT_CARD
+TX019,2025-10-21 12:00,Coffee shop,Barista,310,DEBIT_CARD
+TX020,2025-10-23 08:50,Salary credit,Meridian Software Pvt Ltd,72000,BANK_TRANSFER
+TX021,2025-10-24 12:00,Rent payment,Skyline Housing,20000,NETBANKING
+TX022,2025-10-25 09:15,Grocery shopping,City Mart,1070,UPI
+TX023,2025-10-26 18:00,Mobile recharge,Vodafone,299,UPI
+TX024,2025-10-27 11:00,Pharmacy,Apollo Pharmacy,380,UPI
+TX025,2025-10-28 14:00,Online shopping,Amazon India,1560,DEBIT_CARD
+TX026,2025-10-29 09:30,Coffee shop,Barista,320,DEBIT_CARD
+TX027,2025-10-30 18:30,Dinner,Swiggy,670,UPI
+TX028,2025-10-31 10:00,Grocery shopping,City Mart,1110,UPI
+TX029,2025-11-01 09:15,Fuel,HPCL Fuel Station,2980,DEBIT_CARD
+TX030,2025-11-03 11:00,Coffee shop,Barista,350,DEBIT_CARD
+TX031,2025-11-04 12:00,Online shopping,Flipkart,1650,DEBIT_CARD
+TX032,2025-11-05 09:00,Grocery shopping,City Mart,930,UPI
+TX033,2025-11-06 18:00,Dinner,Zomato,480,UPI
+TX034,2025-11-07 14:00,Pharmacy,Apollo Pharmacy,610,UPI
+TX035,2025-11-08 09:30,Electricity bill,MSEDCL,1890,NETBANKING
+TX036,2025-11-10 09:15,Grocery shopping,City Mart,1160,UPI
+TX037,2025-11-11 11:30,Coffee shop,Barista,360,DEBIT_CARD
+TX038,2025-11-12 16:00,Online shopping,Amazon India,2050,DEBIT_CARD
+TX039,2025-11-13 10:00,Fuel,HPCL Fuel Station,2850,DEBIT_CARD
+TX040,2025-11-14 09:00,Grocery shopping,City Mart,1020,UPI
+TX041,2025-11-15 17:00,Movie tickets,BookMyShow,780,DEBIT_CARD
+TX042,2025-11-16 09:30,Mobile recharge,Vodafone,299,UPI
+TX043,2025-11-18 08:45,Salary credit,Meridian Software Pvt Ltd,72000,BANK_TRANSFER
+TX044,2025-11-19 12:00,Rent payment,Skyline Housing,20000,NETBANKING
+TX045,2025-11-20 09:15,Grocery shopping,City Mart,1080,UPI
+TX046,2025-11-21 18:30,Dinner,Swiggy,600,UPI
+TX047,2025-11-22 14:00,Online shopping,Flipkart,1900,DEBIT_CARD
+TX048,2025-11-23 09:30,Coffee shop,Barista,330,DEBIT_CARD
+TX049,2025-11-24 10:00,Grocery shopping,City Mart,1100,UPI
+TX050,2025-11-25 11:00,Pharmacy,Apollo Pharmacy,440,UPI
+TX051,2025-11-26 09:15,Fuel,HPCL Fuel Station,2700,DEBIT_CARD
+TX052,2025-11-27 18:00,Dinner,Zomato,500,UPI
+TX053,2025-11-28 10:00,Grocery shopping,City Mart,1190,UPI
+TX054,2025-11-29 14:30,Online shopping,Amazon India,1780,DEBIT_CARD
+TX055,2025-11-30 09:00,Coffee shop,Barista,340,DEBIT_CARD
+TX056,2025-12-01 09:00,Internet bill,BSNL Fiber,799,NETBANKING
+TX057,2025-12-02 09:15,Grocery shopping,City Mart,1040,UPI
+TX058,2025-12-03 10:00,Mobile recharge,Vodafone,299,UPI
+TX059,2025-12-04 09:30,Fuel,HPCL Fuel Station,2920,DEBIT_CARD
+TX060,2025-12-05 11:00,Coffee shop,Barista,310,DEBIT_CARD
+TX061,2025-12-06 14:00,Online shopping,Flipkart,1700,DEBIT_CARD
+TX062,2025-12-07 18:30,Dinner,Swiggy,560,UPI
+TX063,2025-12-08 09:15,Grocery shopping,City Mart,1130,UPI
+TX064,2025-12-09 11:00,Pharmacy,Apollo Pharmacy,390,UPI
+TX065,2025-12-10 09:30,Electricity bill,MSEDCL,1920,NETBANKING
+TX066,2025-12-11 16:00,Online shopping,Amazon India,1850,DEBIT_CARD
+TX067,2025-12-12 18:00,Dinner,Zomato,460,UPI
+TX068,2025-12-13 09:30,Coffee shop,Barista,300,DEBIT_CARD
+TX069,2025-12-14 10:00,Grocery shopping,City Mart,1070,UPI
+TX070,2025-12-15 09:15,Fuel,HPCL Fuel Station,2880,DEBIT_CARD
+TX071,2025-12-16 08:50,Salary credit,Meridian Software Pvt Ltd,72000,BANK_TRANSFER
+TX072,2025-12-17 12:00,Rent payment,Skyline Housing,20000,NETBANKING
+TX073,2025-12-18 09:15,Grocery shopping,City Mart,1160,UPI
+TX074,2025-12-19 14:00,Online shopping,Flipkart,2100,DEBIT_CARD
+TX075,2025-12-20 09:30,Coffee shop,Barista,330,DEBIT_CARD
+TX076,2025-12-21 18:00,Dinner,Swiggy,580,UPI
+TX077,2025-12-22 10:00,Grocery shopping,City Mart,1090,UPI
+TX078,2025-12-23 11:00,Pharmacy,Apollo Pharmacy,490,UPI
+TX079,2025-12-24 09:30,Mobile recharge,Vodafone,299,UPI
+TX080,2025-12-26 09:15,Fuel,HPCL Fuel Station,2960,DEBIT_CARD
+TX081,2025-12-27 16:00,Online shopping,Amazon India,3800,DEBIT_CARD
+TX082,2025-12-28 18:30,Dinner,Zomato,650,UPI
+TX083,2025-12-29 09:30,Coffee shop,Barista,380,DEBIT_CARD
+TX084,2025-12-30 10:00,Grocery shopping,City Mart,1200,UPI
+TX085,2025-12-31 09:00,Internet bill,BSNL Fiber,799,NETBANKING
+TX086,2026-01-01 10:00,New Year grocery,City Mart,1650,UPI
+TX087,2026-01-02 09:15,Fuel,HPCL Fuel Station,2800,DEBIT_CARD
+TX088,2026-01-03 08:45,Salary credit,Meridian Software Pvt Ltd,72000,BANK_TRANSFER
+TX089,2026-01-04 12:00,Rent payment,Skyline Housing,20000,NETBANKING
+TX090,2026-01-05 09:00,Grocery shopping,City Mart,1120,UPI
+TX091,2026-01-06 14:00,Online shopping,Flipkart,1850,DEBIT_CARD
+TX092,2026-01-07 18:30,Dinner,Swiggy,610,UPI
+TX093,2026-01-08 11:00,Mobile recharge,Vodafone,299,UPI
+TX094,2026-01-09 09:30,Coffee shop,Barista,320,DEBIT_CARD
+TX095,2026-01-10 10:00,Grocery shopping,City Mart,1080,UPI
+TX096,2026-01-11 09:15,Pharmacy,Apollo Pharmacy,420,UPI
+TX097,2026-01-12 16:00,Online shopping,Amazon India,1920,DEBIT_CARD
+TX098,2026-01-13 18:00,Dinner,Zomato,540,UPI
+TX099,2026-01-14 09:30,Fuel,HPCL Fuel Station,2750,DEBIT_CARD
+TX100,2026-01-15 10:00,Electricity bill,MSEDCL,2050,NETBANKING
+TX101,2026-01-16 09:15,Grocery shopping,City Mart,1100,UPI
+TX102,2026-01-17 11:30,Coffee shop,Barista,310,DEBIT_CARD
+TX103,2026-01-18 09:00,Mobile recharge,Vodafone,299,UPI
+TX104,2026-01-19 02:14,Transfer - urgent,TechnoTrade Solutions,45000,IMPS
+TX105,2026-01-19 07:38,Payment,TechnoTrade Solutions,38000,IMPS
+TX106,2026-01-19 11:22,Invoice payment,TechnoTrade Solutions,29500,IMPS
+TX107,2026-01-19 18:45,Grocery shopping,City Mart,1050,UPI
+TX108,2026-01-20 09:30,Online shopping,Amazon India,1800,DEBIT_CARD
+TX109,2026-01-20 13:55,Balance transfer,TechnoTrade Solutions,52000,IMPS
+TX110,2026-01-21 09:15,Fuel,HPCL Fuel Station,2900,DEBIT_CARD
+TX111,2026-01-21 10:00,Grocery shopping,City Mart,1090,UPI
+TX112,2026-01-22 18:30,Dinner,Swiggy,570,UPI
